@@ -1,0 +1,4 @@
+Three different schemes of updating data. 
+First: loging period: 1 minute. Between deep sleep.
+Second: if temperature differs from previous one than deep sleep for 1 minute. If not DS 5 minutes.
+Thirth: wake up evey minute but without wifi on. After temperature check the decision is made what to do: If temperature changed - wifi on and log the data; if not - deep sleep for 1 minute.
