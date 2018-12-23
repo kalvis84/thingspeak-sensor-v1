@@ -260,7 +260,7 @@ void goToDeepSleep(uint16_t seconds)
 
 // the setup function runs once when you press reset or power the board
 void setup() {
-  uint16_t sleepTime = 60;
+  uint16_t sleepTime = 120;
   // Debug console
   Serial.begin(115200);
   delay(100);
@@ -292,8 +292,11 @@ void setup() {
   batteryVoltage = (adcToVoltage * analogRead(A0)) / 1000;
   Serial.print("batteryVoltage: ");
   Serial.println(batteryVoltage);
-
-  if(lastTemp == celsius){
+  if(batteryVoltage < 3.5) sleepTime = 600; //600 => 10 minutes.
+  
+  int tempDiff = (int) ((lastTemp - celsius) * 100);
+  if(tempDiff < 0) tempDiff *= -1;
+  if(tempDiff < 50){   //50 => 0.5°C.
     sendData_flag = 0;
     ++bootsWithoutSendingData;
   }
