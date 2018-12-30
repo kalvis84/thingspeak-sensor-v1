@@ -69,7 +69,7 @@ uint8_t sendData_flag = 0;
 RTC_DATA_ATTR uint8_t bootCount = 0;
 RTC_DATA_ATTR uint8_t wifiConnectionFail = 0;
 RTC_DATA_ATTR uint8_t bootsWithoutSendingData = 0;
-RTC_DATA_ATTR float lastTemp = 0;
+RTC_DATA_ATTR float lastLoggedTemp = 0;
 
 
 
@@ -210,7 +210,7 @@ void setupWiFi(void){
     if(wifiConnectionFail++ > 5){
       smartConfigWiFi ();
     }else{
-      goToDeepSleep(60);
+      goToDeepSleep(120);
     }
   }
   wifiConnectionFail = 0;
@@ -294,7 +294,7 @@ void setup() {
   Serial.println(batteryVoltage);
   if(batteryVoltage < 3.5) sleepTime = 600; //600 => 10 minutes.
   
-  int tempDiff = (int) ((lastTemp - celsius) * 100);
+  int tempDiff = (int) ((lastLoggedTemp - celsius) * 100);
   if(tempDiff < 0) tempDiff *= -1;
   if(tempDiff < 50){   //50 => 0.5°C.
     sendData_flag = 0;
@@ -304,8 +304,6 @@ void setup() {
     sendData_flag = 1;
   }
 
-  lastTemp = celsius;
-  
   if(sendData_flag == 1 || bootsWithoutSendingData >=5){
     
     setupWiFi();
@@ -322,6 +320,7 @@ void setup() {
     ThingSpeak.writeFields(myChannelNumber, myWriteAPIKey);  
   //  ThingSpeak.writeField(myChannelNumber, 1, celsius, myWriteAPIKey);  
     bootsWithoutSendingData = 0;
+    lastLoggedTemp = celsius;
   }
 
    goToDeepSleep(sleepTime);
